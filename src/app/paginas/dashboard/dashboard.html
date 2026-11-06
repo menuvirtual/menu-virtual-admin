@@ -1,0 +1,202 @@
+<app-pagina-titulo
+  [titulo]="restaurante()?.nome ?? 'Dashboard'"
+  [trilha]="[{ rotulo: 'Dashboard' }]"
+>
+  <button type="button" class="btn btn-white btn-sm" (click)="atualizar()">
+    <i class="fa-solid fa-rotate"></i> Atualizar
+  </button>
+</app-pagina-titulo>
+
+<div class="wrapper wrapper-content">
+  @if (resumo.value(); as r) {
+    <div class="row">
+      <div class="col-sm-6 col-xl">
+        <a routerLink="/menus" class="widget navy-bg">
+          <i class="fa-solid fa-book-open"></i>
+          <div class="valor">
+            <span>Menus</span>
+            <h2>{{ r.menus }}</h2>
+          </div>
+        </a>
+      </div>
+      <div class="col-sm-6 col-xl">
+        <a routerLink="/categorias" class="widget lazur-bg">
+          <i class="fa-solid fa-layer-group"></i>
+          <div class="valor">
+            <span>Categorias</span>
+            <h2>{{ r.categorias }}</h2>
+          </div>
+        </a>
+      </div>
+      <div class="col-sm-6 col-xl">
+        <a routerLink="/itens" class="widget blue-bg">
+          <i class="fa-solid fa-utensils"></i>
+          <div class="valor">
+            <span>Itens ({{ r.itensOcultos }} ocultos)</span>
+            <h2>{{ r.itens }}</h2>
+          </div>
+        </a>
+      </div>
+      <div class="col-sm-6 col-xl">
+        <a routerLink="/clientes" class="widget yellow-bg">
+          <i class="fa-solid fa-users"></i>
+          <div class="valor">
+            <span>Clientes</span>
+            <h2>{{ r.clientes }}</h2>
+          </div>
+        </a>
+      </div>
+      <div class="col-sm-6 col-xl">
+        <a routerLink="/tags" class="widget red-bg">
+          <i class="fa-solid fa-tags"></i>
+          <div class="valor">
+            <span>Tags (todos)</span>
+            <h2>{{ r.tags }}</h2>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-lg-8">
+        <app-ibox titulo="Cardápio publicado">
+          @if (menuAtivo(); as m) {
+            @if (m.contemAtualizacaoParaPublicar) {
+              <div class="alert alert-warning py-2 text-start">
+                <i class="fa-solid fa-clock"></i> O preview do menu "{{ m.nome }}" tem atualizações
+                que ainda não foram publicadas.
+                <a [routerLink]="['/menus']">Ir para os menus e publicar</a>
+              </div>
+            }
+            <div class="row text-center">
+              <div class="col-md-4 mb-3 mb-md-0 publicado">
+                <h5 class="text-muted">Menu ativo</h5>
+                <h2 class="fw-semibold">
+                  <a [routerLink]="['/menus', m.id]">{{ m.nome }}</a>
+                </h2>
+              </div>
+              <div class="col-md-4 mb-3 mb-md-0 publicado">
+                <h5 class="text-muted">Versão publicada</h5>
+                <a
+                  class="btn btn-white btn-sm mt-2"
+                  target="_blank"
+                  rel="noopener"
+                  [href]="urlPublica(false)"
+                >
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i> JSON publicado
+                </a>
+              </div>
+              <div class="col-md-4 publicado">
+                <h5 class="text-muted">Versão de preview</h5>
+                <a
+                  class="btn btn-white btn-sm mt-2"
+                  target="_blank"
+                  rel="noopener"
+                  [href]="urlPublica(true)"
+                >
+                  <i class="fa-solid fa-eye"></i> JSON de preview
+                </a>
+              </div>
+            </div>
+          } @else {
+            <div class="text-center">
+              <h2><span class="label label-danger">Sem menu ativo</span></h2>
+              <p class="small text-muted mb-0">O cardápio público responde 404. Ative um menu.</p>
+            </div>
+          }
+        </app-ibox>
+
+        <app-ibox titulo="Menus" [semEspaco]="true">
+          <a ibox-ferramentas routerLink="/menus/novo" class="btn btn-primary btn-xs text-white">
+            <i class="fa-solid fa-plus"></i> Novo menu
+          </a>
+          <table class="table table-hover">
+            <tbody>
+              @for (m of menus.value(); track m.id) {
+                <tr>
+                  <td>
+                    <a [routerLink]="['/menus', m.id]" class="fw-semibold">{{ m.nome }}</a>
+                  </td>
+                  <td>
+                    <app-situacao-menu [menu]="m" />
+                    @if (m.contemAtualizacaoParaPublicar) {
+                      <span class="label label-warning ms-1">Para publicar</span>
+                    }
+                  </td>
+                  <td class="acoes">
+                    <a [routerLink]="['/menus', m.id]" class="btn btn-white btn-xs">Editar</a>
+                    <a
+                      [routerLink]="['/itens']"
+                      [queryParams]="{ menuId: m.id }"
+                      class="btn btn-white btn-xs ms-1"
+                      >Itens</a
+                    >
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td class="vazio">
+                    <i class="fa-solid fa-book-open"></i> Nenhum menu.
+                    <a routerLink="/menus/novo">Criar o primeiro</a>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </app-ibox>
+      </div>
+
+      <div class="col-lg-4">
+        <app-ibox titulo="Estrutura (todos os menus)">
+          <ul class="list-group list-group-flush resumo">
+            <li class="list-group-item">
+              <a routerLink="/categorias">Categorias</a>
+              <span class="label label-primary">{{ r.categorias }}</span>
+            </li>
+            <li class="list-group-item">
+              <a routerLink="/subcategorias">Subcategorias</a>
+              <span class="label label-info">{{ r.subCategorias }}</span>
+            </li>
+            <li class="list-group-item">
+              <a routerLink="/itens">Itens</a>
+              <span class="label label-success">{{ r.itens }}</span>
+            </li>
+            <li class="list-group-item">
+              <a routerLink="/itens">Itens ocultos</a>
+              <span class="label label-warning">{{ r.itensOcultos }}</span>
+            </li>
+          </ul>
+        </app-ibox>
+
+        <app-ibox titulo="Regras dos menus">
+          <p class="mb-2">
+            O restaurante pode ter vários menus, mas só um
+            <span class="label label-primary">Ativo</span>: é o que o cardápio exibe. Ativar outro
+            desativa o atual.
+          </p>
+          <p class="mb-0">
+            Cada menu tem duas versões: a <strong>publicada</strong> (<code>GET /menu</code>) e a de
+            <strong>preview</strong> (<code>GET /menu?preview=true</code>), para revisar mudanças
+            antes de publicar.
+          </p>
+        </app-ibox>
+
+        <a routerLink="/configuracao" class="btn btn-white w-100">
+          <i class="fa-solid fa-gear"></i> Configuração do restaurante e dos menus
+        </a>
+      </div>
+    </div>
+  } @else if (resumo.isLoading()) {
+    <div class="vazio"><i class="fa-solid fa-spinner fa-spin"></i> Carregando...</div>
+  } @else if (resumo.error()) {
+    <div class="vazio">
+      <i class="fa-solid fa-plug-circle-xmark"></i>
+      Não foi possível carregar o resumo. Verifique se a API está rodando em {{ apiUrl }}.
+      <div class="mt-2">
+        <button type="button" class="btn btn-primary btn-sm" (click)="atualizar()">
+          Tentar de novo
+        </button>
+      </div>
+    </div>
+  }
+</div>

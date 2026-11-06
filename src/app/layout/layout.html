@@ -1,0 +1,105 @@
+<div id="wrapper">
+  <nav class="navbar-static-side" aria-label="Menu principal">
+    <ul class="side-menu">
+      <li class="nav-header">
+        <div class="profile-element">
+          <div class="avatar">{{ iniciais() }}</div>
+          <span class="nome">{{ restaurante()?.nome }}</span>
+          <span class="cargo">
+            <i class="fa-solid fa-user"></i> {{ usuario() }}
+            @if (superUsuario()) {
+              · superusuário
+            }
+          </span>
+          @if (podeTrocar()) {
+            <a
+              role="button"
+              class="cargo"
+              title="Escolher outro restaurante"
+              (click)="trocarRestaurante()"
+            >
+              Trocar restaurante <i class="fa-solid fa-caret-down"></i>
+            </a>
+          }
+        </div>
+        <div class="logo-element" [title]="restaurante()?.nome ?? ''">{{ iniciais() }}</div>
+      </li>
+
+      @for (item of itens; track item.rotulo) {
+        <li [class.active]="ativo(item)" [class.aberto]="aberto(item)">
+          @if (item.filhos) {
+            <a role="button" [attr.aria-expanded]="aberto(item)" (click)="alternar(item)">
+              <i class="fa-solid" [class]="item.icone"></i>
+              <span class="nav-label">{{ item.rotulo }}</span>
+              <i class="fa-solid fa-angle-left seta"></i>
+            </a>
+            @if (aberto(item) || mini()) {
+              <ul class="nav-second-level">
+                @for (filho of item.filhos; track filho.link) {
+                  <li [class.active]="filhoAtivo(filho.link)">
+                    <a [routerLink]="filho.link">{{ filho.rotulo }}</a>
+                  </li>
+                }
+              </ul>
+            }
+          } @else {
+            <a [routerLink]="item.link">
+              <i class="fa-solid" [class]="item.icone"></i>
+              <span class="nav-label">{{ item.rotulo }}</span>
+            </a>
+          }
+        </li>
+      }
+
+      <li class="special-link">
+        <a [href]="apiUrl + '/docs'" target="_blank" rel="noopener">
+          <i class="fa-solid fa-book"></i>
+          <span class="nav-label">API (Swagger)</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div id="page-wrapper" class="gray-bg">
+    <div class="border-bottom">
+      <nav class="navbar-static-top" aria-label="Barra superior">
+        <button
+          type="button"
+          class="btn btn-primary minimalize-styl-2"
+          aria-label="Recolher/expandir menu"
+          (click)="mini.set(!mini())"
+        >
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <ul class="navbar-top-links">
+          <li>
+            <span class="text-muted welcome-message">
+              Administrando <strong>{{ restaurante()?.nome }}</strong>
+            </span>
+          </li>
+          @if (podeTrocar()) {
+            <li>
+              <a role="button" title="Escolher outro restaurante" (click)="trocarRestaurante()">
+                <i class="fa-solid fa-right-left"></i> Trocar restaurante
+              </a>
+            </li>
+          }
+          <li>
+            <a role="button" title="Sair do admin" (click)="sair()">
+              <i class="fa-solid fa-right-from-bracket"></i> Sair
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <main class="d-flex flex-column flex-grow-1">
+      <router-outlet />
+    </main>
+
+    <div class="footer">
+      <div><strong>Menu Admin</strong> &copy; {{ ano }}</div>
+      <div class="text-muted">API: {{ apiUrl }}</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,730 @@
+// Estrutura e componentes do tema INSPINIA, adaptados ao Bootstrap 5.
+@import 'paleta';
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: $fonte;
+  font-size: 13px;
+  color: $texto;
+  background-color: $sidebar; // a área atrás da sidebar
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 100;
+}
+h1 {
+  font-size: 30px;
+}
+h2 {
+  font-size: 24px;
+}
+h3 {
+  font-size: 16px;
+}
+h4 {
+  font-size: 14px;
+}
+h5 {
+  font-size: 12px;
+}
+h3,
+h4,
+h5 {
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+  &:hover,
+  &:focus {
+    text-decoration: none;
+  }
+}
+
+.gray-bg {
+  background-color: $fundo-cinza;
+}
+.white-bg {
+  background-color: #fff;
+}
+.text-navy {
+  color: $navy !important;
+}
+.font-bold {
+  font-weight: 600;
+}
+.border-bottom {
+  border-bottom: 1px solid $borda !important;
+}
+
+// ---------------------------------------------------------------- layout
+
+#wrapper {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+.navbar-static-side {
+  position: absolute;
+  z-index: 2001;
+  width: $largura-sidebar;
+  min-height: 100%;
+  background-color: $sidebar;
+  transition: width 0.2s;
+}
+
+#page-wrapper {
+  position: relative;
+  min-height: 100vh;
+  margin: 0 0 0 $largura-sidebar;
+  padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+  transition: margin 0.2s;
+}
+
+.wrapper-content {
+  padding: 20px 10px 40px;
+  flex: 1;
+}
+
+// Sidebar: menu
+.side-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  > li {
+    position: relative;
+    > a {
+      display: flex;
+      align-items: center;
+      color: $sidebar-texto;
+      font-weight: 600;
+      padding: 14px 20px 14px 25px;
+      &:hover,
+      &:focus {
+        background-color: $sidebar-escuro;
+        color: #fff;
+      }
+      > i:first-child {
+        width: 18px;
+        margin-right: 6px;
+        text-align: center;
+      }
+      .seta {
+        margin-left: auto;
+        font-size: 11px;
+        transition: transform 0.2s;
+      }
+    }
+    &.active {
+      border-left: 4px solid $navy-borda-ativa;
+      background: $sidebar-escuro;
+      > a {
+        color: #fff;
+        padding-left: 21px;
+      }
+    }
+    &.aberto > a .seta {
+      transform: rotate(-90deg);
+    }
+  }
+}
+
+.nav-second-level {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 10px;
+  li a {
+    display: block;
+    color: $sidebar-texto;
+    font-weight: 600;
+    padding: 7px 10px 7px 52px;
+    &:hover {
+      color: #fff;
+    }
+  }
+  li.active a {
+    color: #fff;
+  }
+}
+
+.nav-header {
+  padding: 33px 25px;
+  background-color: $sidebar;
+  // padrão discreto no lugar da imagem "header-profile.png"
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(26, 179, 148, 0.18), rgba(0, 0, 0, 0));
+  background-size:
+    6px 6px,
+    100% 100%;
+  color: #dfe4ed;
+}
+.profile-element {
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: $navy;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .nome {
+    display: block;
+    font-weight: 600;
+    color: #dfe4ed;
+  }
+  .cargo {
+    display: block;
+    font-size: 11px;
+    color: #8095a8;
+  }
+}
+.logo-element {
+  display: none;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  padding: 18px 0;
+}
+
+// Barra superior
+.navbar-static-top {
+  display: flex;
+  align-items: center;
+  min-height: 60px;
+  background: $fundo-cinza;
+  margin: 0 -15px;
+  padding: 0 15px;
+
+  .minimalize-styl-2 {
+    padding: 4px 12px;
+    margin: 14px 5px 5px 5px;
+    font-size: 14px;
+  }
+  .navbar-top-links {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    list-style: none;
+    margin-bottom: 0;
+    padding: 0;
+    li a {
+      color: #999c9e;
+      padding: 20px 10px;
+      display: inline-block;
+      &:hover {
+        color: $texto;
+      }
+    }
+  }
+  .welcome-message {
+    padding: 20px 10px;
+  }
+}
+
+// Cabeçalho da página
+.page-heading {
+  border-top: 0;
+  padding: 0 10px 20px 10px;
+  margin: 0 -15px;
+  background: #fff;
+  border-bottom: 1px solid $borda;
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  h2 {
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+  .acoes {
+    margin-left: auto;
+    padding-bottom: 2px;
+    display: flex;
+    gap: 6px;
+  }
+}
+.breadcrumb {
+  background-color: #fff;
+  padding: 0;
+  margin-bottom: 0;
+  a {
+    color: inherit;
+  }
+  .active {
+    font-weight: 700;
+  }
+}
+
+.footer {
+  background: #fff;
+  border-top: 1px solid $borda;
+  padding: 10px 20px;
+  margin: 0 -15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+// Sidebar recolhida ("mini-navbar")
+body.mini-navbar {
+  .navbar-static-side {
+    width: $largura-sidebar-mini;
+  }
+  #page-wrapper {
+    margin-left: $largura-sidebar-mini;
+  }
+  .profile-element,
+  .nav-label,
+  .side-menu .seta,
+  .side-menu .badge {
+    display: none !important;
+  }
+  .logo-element {
+    display: block;
+  }
+  .nav-header {
+    padding: 0;
+    background: $navy;
+  }
+  .side-menu > li > a {
+    font-size: 16px;
+    padding-left: 25px;
+    justify-content: flex-start;
+  }
+  .side-menu > li.active > a {
+    padding-left: 21px;
+  }
+  // submenu flutuante ao passar o mouse
+  .nav-second-level {
+    display: none !important;
+    position: absolute;
+    left: $largura-sidebar-mini;
+    top: 0;
+    min-width: 160px;
+    background-color: $sidebar;
+    padding: 10px;
+    border-radius: 0 2px 2px 0;
+    li a {
+      padding: 10px 10px 10px 15px;
+      font-size: 12px;
+      border-radius: 3px;
+    }
+  }
+  .side-menu > li:hover > .nav-second-level {
+    display: block !important;
+  }
+}
+
+// Telas pequenas: a sidebar some e abre por cima do conteúdo
+@media (max-width: 768px) {
+  .navbar-static-side {
+    display: none;
+  }
+  #page-wrapper {
+    margin: 0 !important;
+  }
+  body.mini-navbar {
+    .navbar-static-side {
+      display: block;
+      width: $largura-sidebar;
+    }
+    .profile-element,
+    .nav-label,
+    .side-menu .seta {
+      display: initial !important;
+    }
+    .profile-element {
+      display: block !important;
+    }
+    .logo-element {
+      display: none;
+    }
+    .nav-header {
+      padding: 33px 25px;
+      background-color: $sidebar;
+    }
+    .nav-second-level {
+      display: block !important;
+      position: static;
+      background: transparent;
+      padding: 0 0 10px;
+      li a {
+        padding-left: 52px;
+      }
+    }
+  }
+  .welcome-message {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------- ibox (painel)
+
+.ibox {
+  clear: both;
+  margin-bottom: 25px;
+  margin-top: 0;
+  padding: 0;
+}
+.ibox-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  background-color: #fff;
+  border-color: $borda;
+  border-style: solid solid none;
+  border-width: 2px 0 0;
+  color: inherit;
+  margin-bottom: 0;
+  padding: 12px 15px 8px 15px;
+
+  h5 {
+    display: inline-block;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+  }
+  .ibox-tools {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    a {
+      color: #c4c4c4;
+      &:hover {
+        color: $texto;
+      }
+    }
+  }
+}
+.ibox-content {
+  background-color: #fff;
+  color: inherit;
+  padding: 15px 20px 20px 20px;
+  border-color: $borda;
+  border-image: none;
+  border-style: solid none;
+  border-width: 1px 0;
+  &.no-padding {
+    padding: 0;
+  }
+}
+.ibox-footer {
+  color: inherit;
+  border-top: 1px solid $borda;
+  font-size: 90%;
+  background: #fff;
+  padding: 10px 15px;
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+// ---------------------------------------------------------------- widgets do dashboard
+
+.widget {
+  border-radius: 5px;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  transition: filter 0.15s;
+
+  &:hover {
+    filter: brightness(0.96);
+    color: #fff;
+  }
+  i {
+    font-size: 48px;
+    opacity: 0.9;
+  }
+  .valor {
+    margin-left: auto;
+    text-align: right;
+    span {
+      display: block;
+    }
+    h2 {
+      font-size: 30px;
+      font-weight: 600;
+      margin: 5px 0 0;
+    }
+  }
+}
+.navy-bg {
+  background-color: $navy !important;
+  color: #fff;
+}
+.blue-bg {
+  background-color: $blue !important;
+  color: #fff;
+}
+.lazur-bg {
+  background-color: $lazur !important;
+  color: #fff;
+}
+.yellow-bg {
+  background-color: $yellow !important;
+  color: #fff;
+}
+.red-bg {
+  background-color: $red !important;
+  color: #fff;
+}
+
+// ---------------------------------------------------------------- rótulos ("label" do Inspinia)
+
+.label {
+  display: inline-block;
+  background-color: $label-cinza;
+  color: #5e5e5e;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 0.25em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.label-primary {
+  background-color: $navy;
+  color: #fff;
+}
+.label-success {
+  background-color: $blue;
+  color: #fff;
+}
+.label-info {
+  background-color: $lazur;
+  color: #fff;
+}
+.label-warning {
+  background-color: $yellow;
+  color: #fff;
+}
+.label-danger {
+  background-color: $red;
+  color: #fff;
+}
+
+// ---------------------------------------------------------------- botões, tabelas e formulários
+
+.btn {
+  border-radius: 3px;
+  font-size: inherit;
+  &:focus,
+  &:focus-visible {
+    box-shadow: none;
+  }
+}
+.btn-xs {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+}
+.btn-sm {
+  font-size: 0.8rem;
+}
+.btn-white {
+  color: inherit;
+  background: #fff;
+  border: 1px solid $borda;
+  &:hover,
+  &:focus,
+  &:active {
+    color: inherit;
+    background: #fff;
+    border: 1px solid #d2d2d2;
+  }
+}
+.btn-primary {
+  --bs-btn-hover-bg: #{$navy-escuro};
+  --bs-btn-hover-border-color: #{$navy-escuro};
+  --bs-btn-active-bg: #{$navy-escuro};
+  --bs-btn-active-border-color: #{$navy-escuro};
+  --bs-btn-disabled-bg: #{$navy-escuro};
+  --bs-btn-disabled-border-color: #{$navy-escuro};
+}
+
+.table {
+  --bs-table-color: #{$texto};
+  margin-bottom: 0;
+  > thead > tr > th {
+    border-bottom: 1px solid #ddd;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  > :not(caption) > * > * {
+    border-top: 1px solid $borda;
+    border-bottom: 0;
+    padding: 8px;
+    vertical-align: middle;
+  }
+  .acoes {
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+  }
+}
+.table-hover > tbody > tr:hover > * {
+  --bs-table-bg-state: #f5f5f5;
+}
+
+.form-control,
+.form-select {
+  border-radius: 1px;
+  border-color: $borda-input;
+  font-size: 0.9rem;
+  &:focus {
+    border-color: $navy;
+    box-shadow: none;
+  }
+}
+.form-label {
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.form-text {
+  color: #999;
+}
+.form-check-input:checked {
+  background-color: $navy;
+  border-color: $navy;
+}
+.form-check-input:focus {
+  box-shadow: none;
+  border-color: $navy;
+}
+.form-switch .form-check-input {
+  cursor: pointer;
+}
+.form-check-label {
+  cursor: pointer;
+}
+.hr-line-dashed {
+  border-top: 1px dashed $borda;
+  height: 1px;
+  margin: 20px 0;
+}
+
+// Abas (tabs-container)
+.nav-tabs {
+  border-bottom: 1px solid $borda;
+  .nav-link {
+    color: $sidebar-texto;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 0;
+    &:hover {
+      color: $texto;
+      border-color: transparent;
+    }
+    &.active {
+      color: #555;
+      border: 1px solid $borda;
+      border-bottom-color: transparent;
+      background-color: #fff;
+    }
+  }
+}
+
+.vazio {
+  text-align: center;
+  color: #999;
+  padding: 30px 10px;
+  i {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 8px;
+    color: #d1dade;
+  }
+}
+
+// Link de destaque no fim da sidebar ("special_link" do Inspinia)
+.side-menu > li.special-link > a {
+  background: $navy;
+  color: #fff;
+  &:hover {
+    background: #17987e;
+  }
+}
+
+.list-group.resumo .list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+// Busca no topo das listas
+.barra-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  padding: 15px 20px;
+  border-bottom: 1px solid $borda;
+  .busca {
+    max-width: 320px;
+  }
+}
+
+.profile-element a.cargo {
+  cursor: pointer;
+  &:hover {
+    color: #fff;
+  }
+}
+
+// Telas fora do layout (login e escolha do restaurante), como a página de login do Inspinia
+.pagina-acesso {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 60px 15px 30px;
+}
+.middle-box {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  h3 {
+    font-weight: 600;
+  }
+  &.larga {
+    max-width: 460px;
+  }
+}
+.logo-name {
+  color: #e6e6e6;
+  font-size: 140px;
+  font-weight: 800;
+  letter-spacing: -10px;
+  margin-bottom: 0;
+  line-height: 1;
+}

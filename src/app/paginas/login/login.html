@@ -1,0 +1,218 @@
+<div class="pagina-acesso gray-bg">
+  <div class="middle-box">
+    <h1 class="logo-name">M+</h1>
+
+    @switch (etapa()) {
+      @case ('entrar') {
+        <h3>Bem-vindo ao Menu Admin</h3>
+        <p class="text-muted">Entre para administrar o cardápio do seu restaurante.</p>
+      }
+      @case ('nova-senha') {
+        <h3>Defina sua senha</h3>
+        <p class="text-muted">
+          Primeiro acesso de <strong>{{ formEntrar.controls.usuario.value }}</strong
+          >.
+        </p>
+      }
+      @case ('esqueci') {
+        <h3>Esqueceu a senha?</h3>
+        <p class="text-muted">Informe o usuário: enviaremos um código para o e-mail cadastrado.</p>
+      }
+      @case ('redefinir') {
+        <h3>Nova senha</h3>
+        <p class="text-muted">Digite o código recebido por e-mail e a nova senha.</p>
+      }
+    }
+
+    @if (aviso(); as texto) {
+      <div class="alert alert-info text-start py-2" role="status">{{ texto }}</div>
+    }
+    @if (erro(); as texto) {
+      <div class="alert alert-danger text-start py-2" role="alert">
+        <i class="fa-solid fa-circle-exclamation"></i> {{ texto }}
+      </div>
+    }
+
+    @switch (etapa()) {
+      @case ('entrar') {
+        <form class="text-start" [formGroup]="formEntrar" (ngSubmit)="entrar()" novalidate>
+          <div class="mb-3">
+            <label class="visually-hidden" for="usuario">Usuário</label>
+            <input
+              id="usuario"
+              class="form-control"
+              formControlName="usuario"
+              placeholder="Usuário"
+              autocomplete="username"
+              [class.is-invalid]="invalido(formEntrar.controls.usuario)"
+            />
+            <div class="invalid-feedback">Informe o usuário.</div>
+          </div>
+          <div class="mb-3">
+            <label class="visually-hidden" for="senha">Senha</label>
+            <input
+              id="senha"
+              type="password"
+              class="form-control"
+              formControlName="senha"
+              placeholder="Senha"
+              autocomplete="current-password"
+              [class.is-invalid]="invalido(formEntrar.controls.senha)"
+            />
+            <div class="invalid-feedback">Informe a senha.</div>
+          </div>
+          <div class="mb-3">
+            <app-captcha
+              [urlDesafio]="urlCaptcha"
+              [class.invalido]="captchaPendente()"
+              (resposta)="respostaCaptcha.set($event); captchaPendente.set(false)"
+            />
+            @if (captchaPendente()) {
+              <div class="text-danger small mt-1">Confirme que você não é um robô.</div>
+            }
+          </div>
+          <button type="submit" class="btn btn-primary w-100" [disabled]="enviando()">
+            <i
+              class="fa-solid"
+              [class]="enviando() ? 'fa-spinner fa-spin' : 'fa-right-to-bracket'"
+            ></i>
+            Entrar
+          </button>
+          <div class="text-center mt-3">
+            <a role="button" (click)="irPara('esqueci')"><small>Esqueceu a senha?</small></a>
+          </div>
+        </form>
+      }
+
+      @case ('nova-senha') {
+        <form
+          class="text-start"
+          [formGroup]="formNovaSenha"
+          (ngSubmit)="definirNovaSenha()"
+          novalidate
+        >
+          <ng-container *ngTemplateOutlet="camposSenha" />
+          <button type="submit" class="btn btn-primary w-100" [disabled]="enviando()">
+            <i class="fa-solid" [class]="enviando() ? 'fa-spinner fa-spin' : 'fa-check'"></i> Salvar
+            senha e entrar
+          </button>
+          <div class="text-center mt-3">
+            <a role="button" (click)="irPara('entrar')"><small>Voltar</small></a>
+          </div>
+        </form>
+      }
+
+      @case ('esqueci') {
+        <form class="text-start" [formGroup]="formEntrar" (ngSubmit)="pedirCodigo()" novalidate>
+          <div class="mb-3">
+            <label class="visually-hidden" for="usuarioEsqueci">Usuário</label>
+            <input
+              id="usuarioEsqueci"
+              class="form-control"
+              formControlName="usuario"
+              placeholder="Usuário"
+              autocomplete="username"
+              [class.is-invalid]="invalido(formEntrar.controls.usuario)"
+            />
+            <div class="invalid-feedback">Informe o usuário.</div>
+          </div>
+          <div class="mb-3">
+            <app-captcha
+              [urlDesafio]="urlCaptcha"
+              [class.invalido]="captchaPendente()"
+              (resposta)="respostaCaptcha.set($event); captchaPendente.set(false)"
+            />
+            @if (captchaPendente()) {
+              <div class="text-danger small mt-1">Confirme que você não é um robô.</div>
+            }
+          </div>
+          <button type="submit" class="btn btn-primary w-100" [disabled]="enviando()">
+            <i class="fa-solid" [class]="enviando() ? 'fa-spinner fa-spin' : 'fa-envelope'"></i>
+            Enviar código
+          </button>
+          <div class="text-center mt-3">
+            <a role="button" (click)="irPara('redefinir')"><small>Já tenho um código</small></a> ·
+            <a role="button" (click)="irPara('entrar')"><small>Voltar ao login</small></a>
+          </div>
+        </form>
+      }
+
+      @case ('redefinir') {
+        <form
+          class="text-start"
+          [formGroup]="formNovaSenha"
+          (ngSubmit)="redefinirSenha()"
+          novalidate
+        >
+          <div class="mb-3">
+            <label class="visually-hidden" for="usuarioRedefinir">Usuário</label>
+            <input
+              id="usuarioRedefinir"
+              class="form-control"
+              [formControl]="formEntrar.controls.usuario"
+              placeholder="Usuário"
+              autocomplete="username"
+              [class.is-invalid]="invalido(formEntrar.controls.usuario)"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="visually-hidden" for="codigo">Código</label>
+            <input
+              id="codigo"
+              class="form-control"
+              [formControl]="formCodigo.controls.codigo"
+              placeholder="Código recebido por e-mail"
+              autocomplete="one-time-code"
+              inputmode="numeric"
+              [class.is-invalid]="invalido(formCodigo.controls.codigo)"
+            />
+            <div class="invalid-feedback">Informe o código.</div>
+          </div>
+          <ng-container *ngTemplateOutlet="camposSenha" />
+          <button type="submit" class="btn btn-primary w-100" [disabled]="enviando()">
+            <i class="fa-solid" [class]="enviando() ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+            Alterar senha
+          </button>
+          <div class="text-center mt-3">
+            <a role="button" (click)="irPara('entrar')"><small>Voltar ao login</small></a>
+          </div>
+        </form>
+      }
+    }
+
+    <ng-template #camposSenha>
+      <div class="mb-3" [formGroup]="formNovaSenha">
+        <label class="visually-hidden" for="novaSenha">Nova senha</label>
+        <input
+          id="novaSenha"
+          type="password"
+          class="form-control"
+          formControlName="novaSenha"
+          placeholder="Nova senha"
+          autocomplete="new-password"
+          [class.is-invalid]="invalido(formNovaSenha.controls.novaSenha)"
+        />
+        <div class="invalid-feedback">
+          Mínimo 8 caracteres, com maiúscula, minúscula, número e símbolo.
+        </div>
+      </div>
+      <div class="mb-3" [formGroup]="formNovaSenha">
+        <label class="visually-hidden" for="confirmacao">Confirme a nova senha</label>
+        <input
+          id="confirmacao"
+          type="password"
+          class="form-control"
+          formControlName="confirmacao"
+          placeholder="Confirme a nova senha"
+          autocomplete="new-password"
+          [class.is-invalid]="invalido(formNovaSenha.controls.confirmacao) || !senhasIguais()"
+        />
+        <div class="invalid-feedback">As senhas não conferem.</div>
+      </div>
+    </ng-template>
+
+    <p class="mt-4 text-muted">
+      <small>Menu Admin &copy; {{ ano }}</small>
+    </p>
+  </div>
+</div>

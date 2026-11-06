@@ -1,0 +1,254 @@
+<app-pagina-titulo
+  [titulo]="novo() ? 'Novo menu' : (registro()?.nome ?? '...')"
+  [trilha]="[
+    { rotulo: 'Menus', link: '/menus' },
+    { rotulo: novo() ? 'Novo' : (registro()?.nome ?? '...') },
+  ]"
+>
+  @if (registro(); as menu) {
+    <app-situacao-menu [menu]="menu" />
+    @if (menu.contemAtualizacaoParaPublicar) {
+      <span class="label label-warning" title="O preview tem mudanças ainda não publicadas">
+        <i class="fa-solid fa-clock"></i> Para publicar
+      </span>
+      <button
+        type="button"
+        class="btn btn-primary btn-sm"
+        title="Copia o preview para a versão publicada"
+        [disabled]="publicando()"
+        (click)="publicar()"
+      >
+        <i class="fa-solid" [class]="publicando() ? 'fa-spinner fa-spin' : 'fa-upload'"></i>
+        Publicar
+      </button>
+    }
+    @if (menu.isAtivo) {
+      <a
+        [href]="urlPublica(menu, false)"
+        target="_blank"
+        rel="noopener"
+        class="btn btn-white btn-sm"
+      >
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> JSON publicado
+      </a>
+      <a
+        [href]="urlPublica(menu, true)"
+        target="_blank"
+        rel="noopener"
+        class="btn btn-white btn-sm"
+      >
+        <i class="fa-solid fa-eye"></i> JSON de preview
+      </a>
+    }
+  }
+</app-pagina-titulo>
+
+<div class="wrapper wrapper-content">
+  @if (!novo()) {
+    <ul class="nav nav-tabs mb-0 bg-white" role="tablist">
+      <li class="nav-item">
+        <button
+          type="button"
+          role="tab"
+          class="nav-link"
+          [class.active]="aba() === 'dados'"
+          (click)="aba.set('dados')"
+        >
+          <i class="fa-solid fa-file-code"></i> Dados e JSON
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          type="button"
+          role="tab"
+          class="nav-link"
+          [class.active]="aba() === 'configuracao'"
+          (click)="aba.set('configuracao')"
+        >
+          <i class="fa-solid fa-sliders"></i> Configuração
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          type="button"
+          role="tab"
+          class="nav-link"
+          [class.active]="aba() === 'estrutura'"
+          (click)="aba.set('estrutura')"
+        >
+          <i class="fa-solid fa-sitemap"></i> Estrutura do cardápio
+        </button>
+      </li>
+    </ul>
+  }
+
+  @switch (aba()) {
+    @case ('dados') {
+      <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+        <div class="row">
+          <div class="col-lg-4">
+            <app-ibox titulo="Menu">
+              <div class="mb-3">
+                <label class="form-label" for="nome">
+                  Nome <span class="text-danger">*</span>
+                </label>
+                <input
+                  id="nome"
+                  class="form-control"
+                  formControlName="nome"
+                  maxlength="80"
+                  placeholder="Ex.: Menu dia, Menu noite, Menu drinks"
+                  [class.is-invalid]="invalido(form.controls.nome)"
+                />
+                <div class="invalid-feedback">Informe o nome do menu (até 80 caracteres).</div>
+                <div class="form-text">
+                  Identifica o menu aqui no admin; não aparece no cardápio.
+                </div>
+              </div>
+
+              <label class="form-label" for="restauranteMenu">Restaurante</label>
+              <input
+                id="restauranteMenu"
+                class="form-control"
+                [value]="restaurante()?.nome ?? ''"
+                disabled
+              />
+
+              <div class="hr-line-dashed"></div>
+
+              <div class="form-check form-switch mb-2">
+                <input
+                  id="isAtivo"
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  formControlName="isAtivo"
+                />
+                <label class="form-check-label" for="isAtivo">Menu ativo (publicado)</label>
+              </div>
+              <div class="form-text">
+                O menu ativo é o que o cardápio exibe: a versão publicada em
+                <code>GET /menu</code> e a de preview em <code>GET /menu?preview=true</code>. Ativar
+                este menu desativa o ativo atual do restaurante.
+              </div>
+
+              @if (registro(); as menu) {
+                <div class="hr-line-dashed"></div>
+                <div class="form-label">Atualizações</div>
+                @if (menu.contemAtualizacaoParaPublicar) {
+                  <p class="mb-0">
+                    <span class="label label-warning"
+                      ><i class="fa-solid fa-clock"></i> Para publicar</span
+                    >
+                    O preview tem mudanças que ainda não foram publicadas.
+                  </p>
+                } @else {
+                  <p class="mb-0">
+                    <span class="label">Em dia</span> O preview e a versão publicada são iguais.
+                  </p>
+                }
+              }
+
+              <div ibox-rodape class="ibox-footer">
+                <a routerLink="/menus" class="btn btn-white btn-sm">Cancelar</a>
+                <button type="submit" class="btn btn-primary btn-sm" [disabled]="salvando()">
+                  <i class="fa-solid" [class]="salvando() ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+                  Salvar
+                </button>
+              </div>
+            </app-ibox>
+          </div>
+
+          <div class="col-lg-8">
+            @if (novo()) {
+              <app-ibox titulo="JSON do cardápio">
+                <p class="mb-0 text-muted">
+                  <i class="fa-solid fa-circle-info"></i> O JSON é gerado automaticamente a partir
+                  das categorias, subcategorias e itens do menu. Salve o menu e cadastre o conteúdo
+                  dele; o JSON aparece aqui.
+                </p>
+              </app-ibox>
+            } @else {
+              <app-ibox titulo="JSON do cardápio (somente leitura)">
+                <button
+                  ibox-ferramentas
+                  type="button"
+                  class="btn btn-white btn-xs"
+                  title="Busca de novo na API"
+                  (click)="recarregar()"
+                >
+                  <i class="fa-solid fa-rotate"></i> Recarregar
+                </button>
+                <button
+                  ibox-ferramentas
+                  type="button"
+                  class="btn btn-white btn-xs"
+                  (click)="copiar()"
+                >
+                  <i class="fa-solid fa-copy"></i> Copiar
+                </button>
+
+                <ul class="nav nav-tabs versoes" role="tablist">
+                  <li class="nav-item">
+                    <button
+                      type="button"
+                      role="tab"
+                      class="nav-link"
+                      [class.active]="versao() === 'payload'"
+                      (click)="versao.set('payload')"
+                    >
+                      <i class="fa-solid fa-globe"></i> Publicado
+                    </button>
+                  </li>
+                  <li class="nav-item">
+                    <button
+                      type="button"
+                      role="tab"
+                      class="nav-link"
+                      [class.active]="versao() === 'payloadPreview'"
+                      (click)="versao.set('payloadPreview')"
+                    >
+                      <i class="fa-solid fa-eye"></i> Preview
+                      @if (registro()?.contemAtualizacaoParaPublicar) {
+                        <span class="label label-warning ms-1">para publicar</span>
+                      }
+                    </button>
+                  </li>
+                </ul>
+
+                <label class="visually-hidden" for="json">JSON ({{ versao() }})</label>
+                <textarea
+                  id="json"
+                  class="form-control payload"
+                  readonly
+                  spellcheck="false"
+                  [value]="json()"
+                ></textarea>
+                <div class="form-text">
+                  @if (versao() === 'payload') {
+                    Versão publicada: <code>GET /menu</code> devolve este JSON (quando o menu está
+                    ativo).
+                  } @else {
+                    Versão de preview: <code>GET /menu?preview=true</code>. Ela se atualiza sozinha
+                    a cada alteração em categorias, subcategorias, itens, mídias, tags e
+                    configuração do menu; use "Publicar" para levá-la à versão publicada.
+                  }
+                </div>
+              </app-ibox>
+            }
+          </div>
+        </div>
+      </form>
+    }
+    @case ('configuracao') {
+      @if (idNumero(); as menuId) {
+        <app-menu-configuracao [menuId]="menuId" />
+      }
+    }
+    @case ('estrutura') {
+      @if (idNumero(); as menuId) {
+        <app-menu-estrutura [menuId]="menuId" />
+      }
+    }
+  }
+</div>

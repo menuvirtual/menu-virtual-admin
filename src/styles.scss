@@ -1,0 +1,28 @@
+/* Tema: Bootstrap 5 com as cores e a fonte do INSPINIA */
+@import 'styles/paleta';
+
+// Bootstrap configurado com a paleta do Inspinia
+$primary: $navy;
+$success: $blue;
+$info: $lazur;
+$warning: $yellow;
+$danger: $red;
+$body-color: $texto;
+// Fundo branco nos componentes (inputs, tabelas, modais); o cinza da página vem de .gray-bg
+$body-bg: #fff;
+$font-family-sans-serif: $fonte;
+$font-size-base: 0.8125rem; // 13px
+$link-color: $navy;
+$link-hover-color: $navy-escuro;
+$link-decoration: none;
+$border-color: $borda;
+$border-radius: 3px;
+$input-border-color: $borda-input;
+$input-focus-border-color: $navy;
+$input-focus-box-shadow: none;
+$component-active-bg: $navy;
+// Inspinia usa texto branco nos botões coloridos (contraste menor que o padrão do Bootstrap)
+$min-contrast-ratio: 1.8;
+
+@import 'bootstrap/scss/bootstrap';
+@import 'styles/inspinia';

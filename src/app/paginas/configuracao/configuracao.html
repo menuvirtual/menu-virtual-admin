@@ -1,0 +1,87 @@
+<app-pagina-titulo titulo="Configuração" [trilha]="[{ rotulo: 'Configuração' }]" />
+
+<div class="wrapper wrapper-content">
+  <div class="row">
+    <div class="col-lg-6">
+      <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+        <app-ibox titulo="Dados do restaurante">
+          <div class="mb-3">
+            <label class="form-label" for="nome">Nome <span class="text-danger">*</span></label>
+            <input
+              id="nome"
+              class="form-control"
+              formControlName="nome"
+              maxlength="120"
+              [class.is-invalid]="invalido(form.controls.nome)"
+            />
+            <div class="invalid-feedback">Informe o nome (até 120 caracteres).</div>
+          </div>
+          <div class="mb-1">
+            <label class="form-label" for="slug">Slug <span class="text-danger">*</span></label>
+            <input
+              id="slug"
+              class="form-control"
+              formControlName="slug"
+              maxlength="60"
+              [class.is-invalid]="invalido(form.controls.slug)"
+            />
+            <div class="invalid-feedback">
+              Use letras minúsculas, números e hífen (ex.: casa-lusitana).
+            </div>
+            <div class="form-text">
+              Endereço do cardápio:
+              <code>{{ apiUrl }}/menu?restaurante={{ form.controls.slug.value || 'slug' }}</code
+              >. Trocar o slug muda esse endereço.
+            </div>
+          </div>
+          <div ibox-rodape class="ibox-footer">
+            <button type="submit" class="btn btn-primary btn-sm" [disabled]="salvando()">
+              <i class="fa-solid" [class]="salvando() ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+              Salvar
+            </button>
+          </div>
+        </app-ibox>
+      </form>
+    </div>
+
+    <div class="col-lg-6">
+      <app-ibox titulo="Menu configurado">
+        <p class="text-muted">
+          Idiomas e pesquisa do cliente são configurados por menu. Escolha o menu (o ativo vem
+          selecionado).
+        </p>
+        <app-seletor-cardapio nivel="menu" modo="formulario" [(menuId)]="filtros.menuId" />
+        @if (filtros.menuId(); as menuId) {
+          <a [routerLink]="['/menus', menuId]" class="btn btn-white btn-sm mt-3">
+            <i class="fa-solid fa-book-open"></i> Abrir o menu
+          </a>
+        }
+      </app-ibox>
+    </div>
+  </div>
+
+  @if (filtros.menuId(); as menuId) {
+    <app-menu-configuracao [menuId]="menuId" />
+  } @else {
+    <div class="alert alert-info">
+      <i class="fa-solid fa-circle-info"></i> Este restaurante ainda não tem menus.
+      <a routerLink="/menus/novo">Criar um menu</a> para configurar idiomas e pesquisa.
+    </div>
+  }
+
+  @if (superUsuario()) {
+    <div class="row mt-4">
+      <div class="col-lg-6">
+        <app-ibox titulo="Excluir restaurante">
+          <p>
+            Remove o restaurante do sistema. Só é possível depois de excluir todos os menus e
+            clientes dele.
+          </p>
+          <button type="button" class="btn btn-danger btn-sm" (click)="excluir()">
+            <i class="fa-solid fa-trash"></i> Excluir restaurante
+          </button>
+        </app-ibox>
+      </div>
+    </div>
+  }
+</div>
