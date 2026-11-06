@@ -61,6 +61,7 @@
             />
             <div class="invalid-feedback">Informe a senha.</div>
           </div>
+          <!-- Captcha temporariamente desativado.
           <div class="mb-3">
             <app-captcha
               [urlDesafio]="urlCaptcha"
@@ -71,6 +72,7 @@
               <div class="text-danger small mt-1">Confirme que você não é um robô.</div>
             }
           </div>
+          -->
           <button type="submit" class="btn btn-primary w-100" [disabled]="enviando()">
             <i
               class="fa-solid"
@@ -116,6 +118,7 @@
             />
             <div class="invalid-feedback">Informe o usuário.</div>
           </div>
+          <!-- Captcha temporariamente desativado.
           <div class="mb-3">
             <app-captcha
               [urlDesafio]="urlCaptcha"
@@ -126,6 +129,7 @@
               <div class="text-danger small mt-1">Confirme que você não é um robô.</div>
             }
           </div>
+          -->
           <button type="submit" class="btn btn-primary w-100" [disabled]="enviando()">
             <i class="fa-solid" [class]="enviando() ? 'fa-spinner fa-spin' : 'fa-envelope'"></i>
             Enviar código

@@ -169,6 +169,24 @@ describe('Admin: login e restaurante', () => {
     expect(document.body.classList.contains('mini-navbar')).toBe(false);
   });
 
+  it('envia login sem captcha', async () => {
+    const resposta = TestBed.inject(Autenticacao).entrar('USER1', 'Menu@12345');
+    const req = http().expectOne(`${API}/auth/login`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ usuario: 'USER1', senha: 'Menu@12345' });
+    req.flush({ desafio: 'primeiro-acesso' });
+    expect(await resposta).toEqual({ tipo: 'nova-senha', desafio: 'primeiro-acesso' });
+  });
+
+  it('solicita recuperação de senha sem captcha', async () => {
+    const resposta = TestBed.inject(Autenticacao).esqueciSenha('USER1');
+    const req = http().expectOne(`${API}/auth/esqueci-senha`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ usuario: 'USER1' });
+    req.flush(null, { status: 204, statusText: 'No Content' });
+    await resposta;
+  });
+
   describe('interceptor', () => {
     it('envia o Bearer token só para a API do admin (não para /auth)', async () => {
       sessaoSalva('USER1');
@@ -177,8 +195,8 @@ describe('Admin: login e restaurante', () => {
       expect(http().expectOne(`${API}/admin/menus`).request.headers.get('Authorization')).toBe(
         'Bearer token-USER1',
       );
-      void firstValueFrom(cliente.get(`${API}/auth/captcha`));
-      expect(http().expectOne(`${API}/auth/captcha`).request.headers.has('Authorization')).toBe(
+      void firstValueFrom(cliente.get(`${API}/auth/login`));
+      expect(http().expectOne(`${API}/auth/login`).request.headers.has('Authorization')).toBe(
         false,
       );
     });
