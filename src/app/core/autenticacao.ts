@@ -25,8 +25,8 @@ export type ResultadoLogin = { tipo: 'ok' } | { tipo: 'nova-senha'; desafio: str
 const CHAVE = 'menuAdmin.sessao';
 
 /**
- * Login e sessão. O admin fala só com a API (POST /auth/...), que valida o
- * captcha e chama o Cognito. O access token vai em toda chamada ao /admin como
+ * Login e sessão. O admin fala só com a API (POST /auth/...), que chama o
+ * Cognito (captcha temporariamente desativado). O access token vai em toda chamada ao /admin como
  * `Authorization: Bearer` (ver interceptor-auth.ts) e é renovado com o refresh token.
  *
  * A sessão fica no localStorage para sobreviver ao recarregar a página.
@@ -57,13 +57,13 @@ export class Autenticacao {
   });
 
   /** URL do desafio do captcha (widget ALTCHA) */
-  readonly urlCaptcha = `${this.base}/captcha`;
+  // readonly urlCaptcha = `${this.base}/captcha`;
 
-  async entrar(usuario: string, senha: string, captcha: string): Promise<ResultadoLogin> {
+  async entrar(usuario: string, senha: string /*, captcha: string */): Promise<ResultadoLogin> {
     const resposta = await firstValueFrom(
       this.http.post<{ sessao?: Sessao; desafio?: string }>(
         `${this.base}/login`,
-        { usuario, senha, captcha },
+        { usuario, senha /*, captcha */ },
         this.silencioso,
       ),
     );
@@ -85,9 +85,13 @@ export class Autenticacao {
     );
   }
 
-  esqueciSenha(usuario: string, captcha: string): Promise<void> {
+  esqueciSenha(usuario: string /*, captcha: string */): Promise<void> {
     return firstValueFrom(
-      this.http.post<void>(`${this.base}/esqueci-senha`, { usuario, captcha }, this.silencioso),
+      this.http.post<void>(
+        `${this.base}/esqueci-senha`,
+        { usuario /*, captcha */ },
+        this.silencioso,
+      ),
     );
   }
 

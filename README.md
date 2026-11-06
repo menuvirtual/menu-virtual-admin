@@ -6,7 +6,7 @@ Visual baseado no tema [INSPINIA](https://chuibility.github.io/inspinia/): mesma
 
 - Angular 22 (versão `next`: `22.3.0-next`), componentes standalone, sem zone.js, signals e `httpResource`
 - Bootstrap 5.3 (com a paleta do Inspinia), Font Awesome e Open Sans (instalados via npm; não usa CDN)
-- Login com os usuários do Cognito (via API) e captcha [ALTCHA](https://altcha.org)
+- Login com os usuários do Cognito (via API) (captcha ALTCHA temporariamente desativado)
 
 ```bash
 # API rodando em http://localhost:3000 (ver ../BackEnd/README.md: npm run dev:setup + start:dev)
@@ -20,7 +20,7 @@ O endereço da API fica em `src/app/core/api-url.ts` (padrão `http://localhost:
 
 ## Login
 
-`/login` (estilo da página de login do Inspinia): usuário, senha e captcha "Não sou um robô". Também
+`/login` (estilo da página de login do Inspinia): usuário, senha (captcha temporariamente desativado). Também
 cobre o primeiro acesso (trocar a senha temporária) e o "esqueci minha senha" (código por e-mail; no
 cognito-local o código aparece em `docker logs menu-api-cognito`).
 
@@ -31,7 +31,7 @@ e `SUPERUSER` (todos).
   `Authorization: Bearer` e é renovado automaticamente (antes de vencer ou ao receber 401). Sem
   renovação possível, volta para o login.
 - A sessão fica no `localStorage` (sobrevive ao recarregar a página). "Sair" na barra superior.
-- O captcha precisa de contexto seguro: abra o admin por `localhost` ou HTTPS (não por IP com HTTP).
+- O código do captcha está comentado e preservado para retomada.
 
 ## Escolha do restaurante
 
